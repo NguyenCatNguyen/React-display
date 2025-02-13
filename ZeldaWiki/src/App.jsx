@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import './App.css'
-import Welcome from "./components/Welcome.jsx"
+import Hero from "./components/Hero.jsx"
+import SearchBar from './components/SearchBar.jsx'
 
 function App() {
   return (
-    <div className="bg-black">
-      <Welcome/>
+    <div className="hero bg-black ">
+      <Hero/>
+      <SearchBar/>
     </div>
   )
 }
