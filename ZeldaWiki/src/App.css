@@ -5,3 +5,17 @@
 .hero{
     font-family: "Audiowide", serif;
 }
+
+
+.blue{
+    color: #1789FC;
+}
+
+.gold{
+    color: #C6A969;
+}
+
+.point:hover{
+    border: 1px white;
+    border-radius: 3px;
+}

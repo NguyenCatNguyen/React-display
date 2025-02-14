@@ -5,9 +5,9 @@ import SearchBar from './components/SearchBar.jsx'
 
 function App() {
   return (
-    <div className="hero bg-black ">
+    <div className="hero bg-black px-15 py-5 text-white ">
       <Hero/>
-      <SearchBar/>
+      {/* <SearchBar/> */}
     </div>
   )
 }
