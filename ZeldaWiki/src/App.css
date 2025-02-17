@@ -1,28 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
 @import "tailwindcss";
 
-
-.hero{
-    font-family: "Audiowide", serif;
-}
-
-
 .blue{
-    color: #1789FC;
+    color: #146ef5;
 }
 
-.gold{
-    color: #C6A969;
+.highlight{
+    margin: 10px 20px;
+    opacity: 50%;
 }
 
-
-.border{
-    border: 1px solid black;
-    border-radius: 10px;
-    padding: 5px 10px;
-}
-
-.border:hover{
-    border-color: white;
-    transition: all ease-in 500ms;
+.highlight:hover{
+    opacity: 100%;
+    transition: ease-in 300ms;
 }
