@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import './App.css'
-import Hero from "./components/Hero.jsx"
-import SearchBar from './components/SearchBar.jsx'
-import Table from './components/Table.jsx'
+import Hero from "./components/sections/Hero.jsx"
+import SortBar from "./components/layout/SortBar.jsx"
 
 function App() {
   return (
-    <div className="font-inter py-10 px-25 bg-black text-white">
+    <div className="font-inter bg-black text-white">
       <Hero/>
-      {/* <SearchBar/> */}
-      <Table/>
+      <SortBar/>
+      
     </div>
   )
 }
