@@ -3,7 +3,7 @@ import NavBar from '../layout/NavBar';
 
 const Hero = () => {
   return (
-    <div className="h-screen py-10 px-24">
+    <div className="pb-50">
       <NavBar/>
       {/* <hr className='border-t-[0.5] border-white opacity-50'/> */}
       <div className='w-4/5'> 

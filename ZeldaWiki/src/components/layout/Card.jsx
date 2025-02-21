@@ -1,14 +1,17 @@
 import React from 'react'
-import logo from '../assets/Zelda_logo.png'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import logo from '../../assets/hero.png'
 
-const Card = () => {
+const Card = ({name}) => {
   return (
-    <div className='w-[250px] h-87 rounded-[10px] bg-gray-900 p-4 m-4 relative cursor-pointer border-2 border-gray-900 hover:border-white hover:translate-y-[-10px] ease-in duration-300'>
-        <div>
-            <img src={logo} alt="" className='bg-white w-[218px] h-[218px] rounded-lg' />
-            <h1 className='pt-2'>ID Num</h1>
-            <h1 className='text-3xl font-bold'>Name dai vl shdk</h1>
+    <div className=''>
+        <div className='w-70  mx-2 my-4 rounded-lg p-4 shadow-md shadow-black/50 border-[0.5px] border-black/20
+                        hover:-translate-y-3 transition-transform hover:shadow-blue-300 duration-300 hover:border-blue-300
+        '>
+            <div className='size-62'>
+              <img src={logo} alt="" className='w-full h-full object-cover rounded-lg' />
+            </div>
+            <h1 className='p-2 font-bold rounded-lg my-2 bg-[#2f2f2f] text-[#fbfbf0] w-15 text-center'>ID</h1>
+            <h1 className='text-3xl font-bold'>{name}test name</h1>
         </div>
 
     </div>

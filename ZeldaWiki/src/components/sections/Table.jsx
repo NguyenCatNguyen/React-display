@@ -1,10 +1,17 @@
 import React from 'react'
-import Card from "../Card.jsx"
+import Card from "../../components/layout/Card.jsx"
 
 
 const Table = () => {
   return (
-    <div className='flex flex-wrap justify-center py-10 px-6 w-screen'>
+    <div className='flex flex-wrap justify-center'>
+        <Card name=""/>
+        <Card/>
+        <Card/>
+        <Card/>
+        <Card/>
+        <Card/>
+        <Card/>
         <Card/>
         <Card/>
         <Card/>

@@ -1,6 +1,1 @@
 @import "tailwindcss";
-
-
-.text-primary{
-  @apply font-bold italic text-4xl text-center
-}

@@ -8,13 +8,13 @@ import Treasure from '../../assets/Treasure.png'
 
 const SortBar = () => {
   return (
-    <div>
-      <div className='flex w-1/3 justify-between'>
-        <img src={Creature} alt="" />
-        <img src={Equipment} alt="" />
-        <img src={Material} alt="" />
-        <img src={Monster} alt="" />
-        <img src={Treasure} alt="" />
+    <div className=''>
+      <div className='flex justify-center flex-wrap '>
+        <img className='sort' src={Creature} alt="" />
+        <img className='sort' src={Equipment} alt="" />
+        <img className='sort' src={Material} alt="" />
+        <img className='sort' src={Monster} alt="" />
+        <img className='sort' src={Treasure} alt="" />
       </div>
     </div>
   )
