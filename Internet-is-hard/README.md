@@ -25,43 +25,33 @@ A comprehensive guide for setting up a React project with Vite, including common
 
 ## Basic Project Setup
 
-### 1. Create a New Project
+
+### 1️⃣ Create a New Project
 
 ```bash
-# Create a new project using Vite
-npm create vite@latest your-project-name -- --template react
+# Create a new Vite + React project
+npm create vite@latest my-app -- --template react
 
 # Navigate to project directory
-cd your-project-name
+cd my-app
 
 # Install dependencies
 npm install
 ```
 
-### 2. Development Server
+---
 
+### 2️⃣ Install & Configure TailwindCSS
 ```bash
-# Start development server
-npm run dev
+# Install TailwindCSS
+npm install tailwindcss @tailwindcss/vite
+
+# Generate the Tailwind configuration file
+npx tailwindcss init
 ```
 
-## Adding Essential Tools
-
-### TailwindCSS Setup
-
-1. Install TailwindCSS and its dependencies:
-```bash
-npm install -D tailwindcss postcss autoprefixer
-```
-
-2. Generate configuration files:
-```bash
-npx tailwindcss init -p
-```
-   - The basic PostCSS setup for autoprefixer and tailwindcss will be handled when this command is run. 
-
-3. Configure `tailwind.config.js`:
-```javascript
+##### Configure Files Properly
+```js
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -72,15 +62,23 @@ export default {
     extend: {},
   },
   plugins: [],
-}
+};
 ```
 
-4. Add to `./src/index.css`:
+##### 🌸 Setup CSS File
 ```css
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 ```
+##### 🌸 Add Tailwind to Your Styles (`./src/index.css`)
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+---
+
 
 ### DaisyUI Library (Optional)
 ```bash
