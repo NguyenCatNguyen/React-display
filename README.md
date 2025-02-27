@@ -32,7 +32,7 @@ A comprehensive guide for setting up a React project with Vite, including common
 
 ```bash
 # Create a new Vite + React project
-npm create vite@latest my-app -- --template react
+npm create vite@latest
 
 # Navigate to project directory
 cd my-app
@@ -46,39 +46,54 @@ npm install
 ### 2️⃣ Install & Configure TailwindCSS
 ```bash
 # Install TailwindCSS
-npm install tailwindcss @tailwindcss/vite
+npm install tailwindcss @tailwindcss/vite postcss autoprefixer
 
-# Generate the Tailwind configuration file
-npx tailwindcss init
+# Create TailwindCSS configuration file
+npx tailwindcss init -p
 ```
 
-##### Configure Files Properly
+##### Configure Files 
+`vite.config.ts`
+```jsx
+import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
+export default defineConfig({
+  plugins: [
+    tailwindcss(),
+  ],
+})
+```
+
+- `tailwind.config.js`
 ```js
-/** @type {import('tailwindcss').Config} */
+/**@type {import('tailwindcss').Config} */
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {},
   },
   plugins: [],
-};
+}
 ```
 
-##### 🌸 Setup CSS File
-```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+- `postcss.config.js`
+```js
+export default {
+  plugins: {
+    '@tailwindcss/postcss': {},
+    autoprefixer: {},
+  }
+}
 ```
 ##### 🌸 Add Tailwind to Your Styles (`./src/index.css`)
 ```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 ```
+
+- `npm run dev`
 ---
 
 

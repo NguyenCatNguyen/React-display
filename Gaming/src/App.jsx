@@ -1,10 +1,8 @@
-
 import React from 'react'
-
 
 const App = () => {
   return (
-    <div className='font-bold'>App test</div>
+    <div className='text-5xl font-bold text-violet-300 font-zentry'>App</div>
   )
 }
 
