@@ -4,7 +4,7 @@ import React from 'react'
 
 const App = () => {
   return (
-    <div className='font-bold'>App</div>
+    <div className='font-bold'>App test</div>
   )
 }
 
