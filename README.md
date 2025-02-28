@@ -46,7 +46,7 @@ npm install
 ### 2️⃣ Install & Configure TailwindCSS
 ```bash
 # Install TailwindCSS
-npm install tailwindcss @tailwindcss/vite postcss autoprefixer
+npm install tailwindcss @tailwindcss/vite
 
 # Create TailwindCSS configuration file
 npx tailwindcss init -p
@@ -56,44 +56,38 @@ npx tailwindcss init -p
 `vite.config.ts`
 ```jsx
 import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+
+// https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    tailwindcss(),
-  ],
+  plugins: [tailwindcss(), react()],
 })
+
 ```
 
-- `tailwind.config.js`
-```js
-/**@type {import('tailwindcss').Config} */
-export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,jsx,ts,tsx}",
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
-```
-
-- `postcss.config.js`
-```js
-export default {
-  plugins: {
-    '@tailwindcss/postcss': {},
-    autoprefixer: {},
-  }
-}
-```
 ##### 🌸 Add Tailwind to Your Styles (`./src/index.css`)
 ```css
 @import "tailwindcss";
+
+/* Custom style */
+@theme {
+  --font-zentry: "zentry", "sans-serif";
+  --font-general: "general", "sans-serif";
+
+  /* Custom colors */
+  --color-blue-50: #DFDFF0;
+  --color-blue-75: #dfdff2;
+  --color-blue-100: #F0F2FA;
+  --color-blue-200: #010101;
+  --color-blue-300: #4FB7DD;
+  --color-violet-300: #5724ff;
+  --color-yellow-100: #8e983f;
+  --color-yellow-300: #edff66;
+}
 ```
 
-- `npm run dev`
+- With TailwindCSS v4, the PostCSS configuration is no longer required. So to add custom styles, using `@theme` in css file make it easier to maintain. 
 ---
 
 
