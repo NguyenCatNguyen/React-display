@@ -392,7 +392,13 @@ git commit -m "Initial commit"
     }
     ```
 - In this example `{like ? "Unlike" : "Like"}` is a conditional rendering. It can be translate to if like is true then render "Unlike" else render "Like".
-
+- Use Case:
+  - Like button
+  - Dark mode
+  - Toggle button
+  - Form input
+  - Counter 
+  - 
 #### useEffect
 - Use to perform js function after the component has been rendered.
     ```jsx
@@ -411,81 +417,142 @@ git commit -m "Initial commit"
     ```
 
 
-## 🌸 Styling in React 
-### Tailwind CSS
+--- 
+# ✨ ✨ Tailwind CSS ✨ ✨
+## ⚙️ Installation
+##### 🧩 Install Tailwind CSS
+```bash
+npm install tailwindcss @tailwindcss/vite
+```
 
-#### Custom styling
-- There are two ways to add custom styling in React.
-    1. Inline styling
-       - `text-[num]` 
-    2. External styling
-       - In the `tailwind.config.js` file add the following code.
-            ```js
-            module.exports = {
-                theme: {
-                    extend: {
-                        colors: {
-                            'custom-color': '#FF0000',
-                        },
-                        fontFamily: {
-                            'custom-font': ['Poppins'],
-                        },
-                        fontSize: {
-                            'custom-size': '2rem',
-                        },
-                    },
-                },
-            }
-            ``` 
+##### 🧩 Import Tailwind CSS in the CSS file
+- `@import "tailwindcss";`
 
-            ```jsx
-            <!-- Add custom component to the jsx file -->
-            <div className="text-custom-color font-custom-font text-custom-size">
-                Hello World
-            ```
-#### CSS file
-- **`@tailwind base`**:
-  - Styles applied globally to the entire project.
-- **`@tailwind components`**:
-  - Styles applied to specific components.
-- **`@tailwind utilities`**:
-  - Styles applied to utility classes like animation, color, font-size, etc.
-- **`@layer`**:
-  - Used to apply styles to specific components.
-  - Example:
-    ```css
-    @layer components {
-      .btn {
-        @apply bg-blue-500 text-white;
-      }
-    }
-    ```
+##### 🧩 Import Tailwind CSS in the CSS file
+```js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 
-#### Explanation of `@apply` and `@layer`
-- **`@apply`**:
-  - The `@apply` directive in Tailwind CSS allows you to use utility classes within your custom CSS. This helps you avoid repeating the same utility classes and keeps your CSS DRY (Don't Repeat Yourself).
-  - Example:
-    ```css
-    .btn {
-      @apply bg-blue-500 text-white py-2 px-4 rounded;
-    }
-    ```
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+})
 
-- **`@layer`**:
-  - The `@layer` directive in Tailwind CSS is used to define custom layers for your styles. This helps you organize your CSS and control the order in which styles are applied.
-  - Example:
-    ```css
-    @layer components {
-      .btn {
-        @apply bg-blue-500 text-white;
-      }
-    }
-    ```
+```
 
+## ⭐️ General Core Concepts
+### Layers
+```css
 
+@layer base{
+    /* Base styles */
+    /* Styles applied globally to the entire project. */
+}
+
+@layer components{
+    /* Component styles */
+    /* Styles applied to specific components. */
+}
+
+@layer utilities{
+    /* Utility styles */
+    /* Styles applied to utility classes like animation, color, font-size, etc. */
+}
+```
+
+### 🧩 Custom Setup with `@theme`
+➡️ Import Google fonts to css file
+
+```css
+@import url('https://fonts.googleapis.com/css2?family=Lilita+One&family=Rye&display=swap');
+@import "tailwindcss";
+
+/*  */
+@theme {
+  --font-rye: "Rye", serif;
+  --font-custom: "Lilita One", sans-serif;
+  --color-custom: #B99F65;
+}
+```
+➡️ Add **custom theme** elements to the jsx file
+```jsx
+<div>
+    <p className=" color-custom font-custom">Hello World</p>
+</div>
+```
 
 #### Tailwind CSS Plugins libraries
 - Shadcn
 - TailwindCSS UI: pre-built components for React and Vue
 - Headless UI: pre-built components for React and Vue
 - Heroicons: SVG icons for React and Vue
+
+---
+# 💫 💫 GSAP 💫 💫
+
+## useGSAP
+- Don't need to Clean up the animation
+- Easier to use
+
+```jsx
+import { useGSAP } from '@gsap/react'
+
+useGSAP(() =>{
+    // GSAP code here
+    gsap.to('.box', {x: 100, duration: 1}) // This animation target the box class
+}, 
+    // SCOPE: If there are multiple box classes, we use SCOPE to target the specific container
+    scope: containerRef 
+
+    // DEPENDENCIES: If the state changes, the animation will run again
+    dependencies: [state]  
+
+    //REVERONUPDATE: the object will return to it original state before doing the animation again
+    runOnUpdate: true
+
+    //
+) 
+```
+
+
+
+```jsx
+useGSAP(() => {
+  // Pick ONE of these based on your animation goal:
+  
+  // OPTION 1: "to" - Move TO a new state
+  // gsap.to(".element", { x: 100, duration: 1, ease: "power2.out" });
+  
+  // OPTION 2: "from" - Start FROM a state and go to current
+  // gsap.from(".element", { x: -100, opacity: 0, duration: 1 });
+  
+  // OPTION 3: "fromTo" - Define start AND end
+  // gsap.fromTo(".element", { x: -100, opacity: 0 }, { x: 100, opacity: 1, duration: 1 });
+  
+  // OPTION 4: "set" - Instantly set properties (no animation)
+  // gsap.set(".element", { x: 0, opacity: 1 });
+}, []);
+```
+
+```jsx
+useGSAP(() => {
+  // Example with "fromTo" + ScrollTrigger (uncomment to use)
+  gsap.fromTo(
+    ".element",
+    { opacity: 0, y: 50 }, // Start state
+    {
+      opacity: 1,
+      y: 0, // End state
+      duration: 1,
+      // scrollTrigger: { // Uncomment this block for scroll magic
+      //   trigger: ".element", // What to watch
+      //   start: "top 80%", // When to start (top of element at 80% viewport)
+      //   end: "top 20%", // When to end
+      //   scrub: true, // Follow scroll position
+      //   toggleActions: "play none none reverse", // On enter, leave, etc.
+      // },
+    }
+  );
+}, []);
+```
