@@ -526,3 +526,481 @@ useGSAP(() => {
 
 - `markers` - Show the trigger markers
 -  
+
+
+
+
+
+
+
+# React API Integration Best Practices
+
+A comprehensive guide to working with APIs in React applications using the "CRAFT" methodology.
+
+## Table of Contents
+
+- [The CRAFT Method](#the-craft-method)
+- [Connection](#connection)
+  - [Basic Setup](#basic-setup)
+  - [React Query Setup](#react-query-setup)
+  - [API Service Structure](#api-service-structure)
+- [Retrieval](#retrieval)
+  - [Loading States](#loading-states)
+  - [Error Handling](#error-handling)
+  - [Caching Strategies](#caching-strategies)
+- [Authentication](#authentication)
+  - [Token Management](#token-management)
+  - [Request Interceptors](#request-interceptors)
+  - [Environment Variables](#environment-variables)
+- [Filtering](#filtering)
+  - [Sorting](#sorting)
+  - [Filtering](#filtering-1)
+  - [Pagination](#pagination)
+  - [Limiting Results](#limiting-results)
+- [Testing](#testing)
+  - [Mock Service Worker](#mock-service-worker)
+  - [Component Testing](#component-testing)
+  - [API Service Testing](#api-service-testing)
+- [Complete Example](#complete-example)
+- [Quick Reference](#quick-reference)
+
+## The CRAFT Method
+
+The CRAFT method is a mnemonic to help organize and remember best practices for React API integration:
+
+- **C**onnection: Setting up API connections properly
+- **R**etrieval: Fetching data efficiently
+- **A**uthentication: Securing your API access
+- **F**iltering: Managing data with sorting, filtering, pagination
+- **T**esting: Verifying your API interactions work
+
+## Connection
+
+### Basic Setup
+
+```javascript
+// Using fetch (built-in)
+fetch('https://api.example.com/data')
+  .then(response => response.json())
+  .then(data => console.log(data));
+
+// Using Axios (more features)
+import axios from 'axios';
+axios.get('https://api.example.com/data')
+  .then(response => console.log(response.data));
+```
+
+### React Query Setup
+
+```javascript
+// App configuration
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60000, // 1 minute
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <YourApp />
+    </QueryClientProvider>
+  );
+}
+```
+
+### API Service Structure
+
+```javascript
+// api/index.js - Centralized API service
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: process.env.REACT_APP_API_URL,
+  timeout: 5000,
+});
+
+export const userService = {
+  getUsers: (params) => api.get('/users', { params }),
+  getUser: (id) => api.get(`/users/${id}`),
+  createUser: (data) => api.post('/users', data),
+  updateUser: (id, data) => api.put(`/users/${id}`, data),
+  deleteUser: (id) => api.delete(`/users/${id}`),
+};
+
+export default api;
+```
+
+## Retrieval
+
+### Loading States
+
+```javascript
+function UserList() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['users'],
+    queryFn: userService.getUsers,
+  });
+
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <ErrorMessage error={error} />;
+  
+  return <UserTable data={data} />;
+}
+```
+
+### Error Handling
+
+```javascript
+function ErrorMessage({ error }) {
+  return (
+    <div className="error-container">
+      <h3>Something went wrong</h3>
+      <p>{error.message}</p>
+      <button onClick={() => window.location.reload()}>
+        Try again
+      </button>
+    </div>
+  );
+}
+```
+
+### Caching Strategies
+
+```javascript
+// Invalidate cache when needed
+const queryClient = useQueryClient();
+
+// After creating a new user
+const createUser = async (userData) => {
+  await userService.createUser(userData);
+  // Invalidate and refetch
+  queryClient.invalidateQueries(['users']);
+};
+
+// Optimistic updates
+const mutation = useMutation({
+  mutationFn: updateUser,
+  onMutate: async (newUser) => {
+    // Cancel outgoing refetches
+    await queryClient.cancelQueries(['users', newUser.id]);
+    
+    // Snapshot the previous value
+    const previousUser = queryClient.getQueryData(['users', newUser.id]);
+    
+    // Optimistically update to the new value
+    queryClient.setQueryData(['users', newUser.id], newUser);
+    
+    // Return context with the snapshotted value
+    return { previousUser };
+  },
+  onError: (err, newUser, context) => {
+    // If the mutation fails, use the context returned from onMutate to roll back
+    queryClient.setQueryData(['users', newUser.id], context.previousUser);
+  },
+  onSettled: (newUser) => {
+    // Always refetch after error or success
+    queryClient.invalidateQueries(['users', newUser.id]);
+  },
+});
+```
+
+## Authentication
+
+### Token Management
+
+```javascript
+// Login and store token
+const login = async (credentials) => {
+  const response = await api.post('/login', credentials);
+  const { token } = response.data;
+  
+  // Store in localStorage or secure HTTP-only cookie (better)
+  localStorage.setItem('auth_token', token);
+  
+  return response.data;
+};
+
+// Logout
+const logout = () => {
+  localStorage.removeItem('auth_token');
+  // Redirect to login page
+};
+```
+
+### Request Interceptors
+
+```javascript
+// Add auth token to all requests
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('auth_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Handle token expiration
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      // Token expired
+      localStorage.removeItem('auth_token');
+      // Redirect to login
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+```
+
+### Environment Variables
+
+```
+# .env.development
+REACT_APP_API_URL=https://dev-api.example.com
+REACT_APP_API_KEY=dev_api_key
+
+# .env.production
+REACT_APP_API_URL=https://api.example.com
+REACT_APP_API_KEY=production_api_key
+```
+
+## Filtering
+
+### Sorting
+
+```javascript
+// Server-side sorting
+const [sortBy, setSortBy] = useState('name');
+const [sortOrder, setSortOrder] = useState('asc');
+
+const { data } = useQuery({
+  queryKey: ['users', { sortBy, sortOrder }],
+  queryFn: () => userService.getUsers({ _sort: sortBy, _order: sortOrder }),
+});
+
+// Handle column header click to sort
+const handleSort = (column) => {
+  if (column === sortBy) {
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  } else {
+    setSortBy(column);
+    setSortOrder('asc');
+  }
+};
+```
+
+### Filtering
+
+```javascript
+// Server-side filtering
+const [filter, setFilter] = useState('');
+
+const { data } = useQuery({
+  queryKey: ['users', { filter }],
+  queryFn: () => userService.getUsers({ q: filter }),
+});
+
+// Search form
+const handleSearch = (e) => {
+  e.preventDefault();
+  setFilter(searchInput);
+};
+```
+
+### Pagination
+
+```javascript
+// Basic pagination
+const [page, setPage] = useState(1);
+const [pageSize, setPageSize] = useState(10);
+
+const { data } = useQuery({
+  queryKey: ['users', { page, pageSize }],
+  queryFn: () => userService.getUsers({ 
+    _page: page, 
+    _limit: pageSize 
+  }),
+  keepPreviousData: true, // Show old data while fetching new data
+});
+
+// Infinite scroll with React Query
+const {
+  data,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+} = useInfiniteQuery({
+  queryKey: ['infiniteUsers'],
+  queryFn: ({ pageParam = 1 }) => 
+    userService.getUsers({ _page: pageParam, _limit: 10 }),
+  getNextPageParam: (lastPage, allPages) => {
+    const morePages = lastPage.length === 10;
+    if (!morePages) return undefined;
+    return allPages.length + 1;
+  },
+});
+
+// Trigger fetchNextPage when user scrolls to bottom
+```
+
+### Limiting Results
+
+```javascript
+// Limit results
+const [pageSize, setPageSize] = useState(10);
+
+// UI for selecting page size
+<select 
+  value={pageSize} 
+  onChange={(e) => setPageSize(Number(e.target.value))}
+>
+  <option value={5}>5 per page</option>
+  <option value={10}>10 per page</option>
+  <option value={25}>25 per page</option>
+  <option value={50}>50 per page</option>
+</select>
+```
+
+## Testing
+
+### Mock Service Worker
+
+```javascript
+// src/mocks/handlers.js
+import { rest } from 'msw';
+
+export const handlers = [
+  rest.get('https://api.example.com/users', (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json([
+        { id: 1, name: 'John Doe' },
+        { id: 2, name: 'Jane Smith' },
+      ])
+    );
+  }),
+];
+
+// src/mocks/server.js
+import { setupServer } from 'msw/node';
+import { handlers } from './handlers';
+
+export const server = setupServer(...handlers);
+```
+
+### Component Testing
+
+```javascript
+// UserList.test.js
+import { render, screen, waitFor } from '@testing-library/react';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import UserList from './UserList';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
+
+test('renders users from API', async () => {
+  render(
+    <QueryClientProvider client={queryClient}>
+      <UserList />
+    </QueryClientProvider>
+  );
+  
+  // Check for loading state
+  expect(screen.getByText(/loading/i)).toBeInTheDocument();
+  
+  // Wait for data to load
+  await waitFor(() => {
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+    expect(screen.getByText('Jane Smith')).toBeInTheDocument();
+  });
+});
+```
+
+### API Service Testing
+
+```javascript
+// userService.test.js
+import { server } from '../mocks/server';
+import { userService } from './userService';
+
+// Start server before all tests
+beforeAll(() => server.listen());
+// Reset handlers after each test
+afterEach(() => server.resetHandlers());
+// Close server after all tests
+afterAll(() => server.close());
+
+test('getUsers returns array of users', async () => {
+  const users = await userService.getUsers();
+  expect(users.length).toBe(2);
+  expect(users[0].name).toBe('John Doe');
+});
+```
+
+## Complete Example
+
+Refer to our example implementation that demonstrates all these concepts in action:
+[Complete React API Integration Example](https://github.com/yourusername/react-api-integration)
+
+## Quick Reference
+
+### React Query Hooks
+
+```javascript
+// GET query
+const { data, isLoading, error } = useQuery({
+  queryKey: ['key', variables],
+  queryFn: () => api.get('/endpoint'),
+  enabled: !!dependentData,
+});
+
+// POST/PUT/DELETE mutation
+const mutation = useMutation({
+  mutationFn: (data) => api.post('/endpoint', data),
+  onSuccess: () => {
+    queryClient.invalidateQueries(['key']);
+  },
+});
+mutation.mutate(newData);
+```
+
+### Common API Parameters
+
+```javascript
+// Common API query parameters
+const params = {
+  _page: 1,           // Pagination page number
+  _limit: 10,         // Results per page
+  _sort: 'name',      // Sort field
+  _order: 'asc',      // Sort direction: asc or desc
+  q: 'searchterm',    // Global search
+  status: 'active',   // Field-specific filter
+};
+```
+
+### Authentication Flow
+
+1. User logs in → receives token
+2. Store token securely (localStorage, secure HTTP-only cookie)
+3. Add token to all requests via interceptor
+4. Handle 401 errors to redirect to login
+5. Clear token on logout
+
+---
+
+Remember the CRAFT method when working with APIs, and your React applications will have solid, maintainable API integrations!
