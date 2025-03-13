@@ -496,12 +496,21 @@ export default defineConfig({
 - Easier to use
 
 ```jsx
-import { useGSAP } from '@gsap/react'
-
-useGSAP(() =>{
-    // GSAP code here
-    gsap.to('.box', {x: 100, duration: 1}) // This animation target the box class
-}, 
+useGSAP(() => {
+  // Pick ONE of these based on your animation goal:
+  
+  // OPTION 1: "to" - Move TO a new state
+  gsap.to(".element", { x: 100, duration: 1, ease: "power2.out" });
+  
+  // OPTION 2: "from" - Start FROM a state and go to current
+  gsap.from(".element", { x: -100, opacity: 0, duration: 1 });
+  
+  // OPTION 3: "fromTo" - Define start AND end
+  gsap.fromTo(".element", { x: -100, opacity: 0 }, { x: 100, opacity: 1, duration: 1 });
+  
+  // OPTION 4: "set" - Instantly set properties (no animation)
+  gsap.set(".element", { x: 0, opacity: 1 });
+},
     // SCOPE: If there are multiple box classes, we use SCOPE to target the specific container
     scope: containerRef 
 
@@ -509,50 +518,11 @@ useGSAP(() =>{
     dependencies: [state]  
 
     //REVERONUPDATE: the object will return to it original state before doing the animation again
-    runOnUpdate: true
-
-    //
-) 
+    runOnUpdate: true);
 ```
 
+## ScrollTrigger
+- `toggleActions`
 
-
-```jsx
-useGSAP(() => {
-  // Pick ONE of these based on your animation goal:
-  
-  // OPTION 1: "to" - Move TO a new state
-  // gsap.to(".element", { x: 100, duration: 1, ease: "power2.out" });
-  
-  // OPTION 2: "from" - Start FROM a state and go to current
-  // gsap.from(".element", { x: -100, opacity: 0, duration: 1 });
-  
-  // OPTION 3: "fromTo" - Define start AND end
-  // gsap.fromTo(".element", { x: -100, opacity: 0 }, { x: 100, opacity: 1, duration: 1 });
-  
-  // OPTION 4: "set" - Instantly set properties (no animation)
-  // gsap.set(".element", { x: 0, opacity: 1 });
-}, []);
-```
-
-```jsx
-useGSAP(() => {
-  // Example with "fromTo" + ScrollTrigger (uncomment to use)
-  gsap.fromTo(
-    ".element",
-    { opacity: 0, y: 50 }, // Start state
-    {
-      opacity: 1,
-      y: 0, // End state
-      duration: 1,
-      // scrollTrigger: { // Uncomment this block for scroll magic
-      //   trigger: ".element", // What to watch
-      //   start: "top 80%", // When to start (top of element at 80% viewport)
-      //   end: "top 20%", // When to end
-      //   scrub: true, // Follow scroll position
-      //   toggleActions: "play none none reverse", // On enter, leave, etc.
-      // },
-    }
-  );
-}, []);
-```
+- `markers` - Show the trigger markers
+-  
